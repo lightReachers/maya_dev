@@ -57,3 +57,8 @@ for mesh_t in wrong_set:
     defaultRenderGlobals = pm.PyNode('defaultRenderGlobals')
     defaultRenderGlobals.startFrame.set(in_frame)
     defaultRenderGlobals.endFrame.set(out_frame)
+    
+    # Shader selection from current selection 
+    sel = cmds.ls(sl=True)
+    cmds.hyperShade( shaderNetworksSelectMaterialNodes=True )
+    print "%s -> %s" % (sel[0], cmds.ls(sl=True)[0])    
