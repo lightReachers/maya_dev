@@ -62,3 +62,36 @@ for mesh_t in wrong_set:
     sel = cmds.ls(sl=True)
     cmds.hyperShade( shaderNetworksSelectMaterialNodes=True )
     print "%s -> %s" % (sel[0], cmds.ls(sl=True)[0])    
+    
+    # Shader export from selection
+import maya.cmds as cmds
+import maya.mel as mel
+import random
+import os
+import pymel.core as pm
+sceneName = cmds.file ( q=True, sn=True, shn=True)
+scenePath = cmds.file ( q=True, sn=True).split(sceneName)
+path = scenePath[0] + sceneName[0] + "_abcExport/"
+if not os.path.exists(path):
+    os.makedirs(path)   
+selectedObj = pm.ls(sl=1,dag=1,s=1)
+shadingGrp = pm.listConnections(selectedObj[0],type='shadingEngine')
+print(selectedObj,list(set(shadingGrp)))
+for shdGrp in list(set(shadingGrp)):
+    print(shdGrp.name())
+    shader = (pm.listConnections(shdGrp.name() + '.surfaceShader'))
+    pm.select(shader)
+    cmds.file(path + 'mat.ma', es=True, type='mayaAscii')
+    
+
+# Assign shader to selection
+
+import pymel.core as PM
+sel = PM.ls(sl=1)
+print(sel)
+
+shr = PM.PyNode('mat_mat_01')
+SG = PM.sets (renderable = True, noSurfaceShader = True, empty = True, name = shr.name() + 'SG')
+PM.sets('mat_mat_01', sel[0].name())
+shr.outColor >> SG.surfaceShader
+    
