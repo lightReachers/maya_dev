@@ -94,4 +94,5 @@ shr = PM.PyNode('mat_mat_01')
 SG = PM.sets (renderable = True, noSurfaceShader = True, empty = True, name = shr.name() + 'SG')
 PM.sets('mat_mat_01', sel[0].name())
 shr.outColor >> SG.surfaceShader
+PM.sets(SG,edit=1,forceElement=sel[0].f)
     
