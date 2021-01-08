@@ -9,7 +9,7 @@ from shiboken2 import wrapInstance
 import maya.cmds as cmds
 import maya.OpenMayaUI as omui
 
-PRJ_ROOT = "F:/Projects/PRJ"
+PRJ_ROOT = "Z:/PROJECT"
 def maya_main_window():
     """
     Return the Maya main window widget as a Python object
@@ -35,7 +35,7 @@ class DesignerUI(QtWidgets.QDialog):
     def init_ui(self, ui_path=None):
       
         print(ui_path)
-        f = QtCore.QFile("E:/project/openfilemaya/open_file.ui")
+        f = QtCore.QFile("Z:/PIPELINE/maya/maya_utils/open_file.ui")
         f.open(QtCore.QFile.ReadOnly)
 
         loader = QtUiTools.QUiLoader()
@@ -55,6 +55,8 @@ class DesignerUI(QtWidgets.QDialog):
         self.ui.shot_list.itemClicked.connect(self.get_files)
         self.ui.file_list.itemClicked.connect(self.get_file_path)
         self.ui.open_btn.clicked.connect(self.open_maya_scene)
+        self.ui.bg.toggled.connect(self.get_shots)
+        self.ui.char_2.toggled.connect(self.get_shots)
     
     def get_projects(self):
         projects = os.listdir(PRJ_ROOT)
@@ -75,6 +77,7 @@ class DesignerUI(QtWidgets.QDialog):
         
     def get_shots(self):
         self.ui.open_btn.hide()
+        self.ui.file_list.clear()
         shot_root = os.path.join(PRJ_ROOT, self.ui.cb_prj.currentText(), "episodes", self.ui.epi_list.currentItem().text(), "shot")
         shots = os.listdir(shot_root)
         self.ui.shot_list.clear()
@@ -83,7 +86,15 @@ class DesignerUI(QtWidgets.QDialog):
     def get_files(self):
         self.ui.open_btn.hide()
         current_shot = self.ui.shot_list.currentItem().text()
-        self.file_root = os.path.join(PRJ_ROOT, self.ui.cb_prj.currentText(), "episodes", self.ui.epi_list.currentItem().text(), "shot", current_shot, "lighting\light_char\maya\work")
+        print(current_shot)
+        char_context = self.ui.char_2.isChecked()
+        print(char_context)
+        if char_context:
+            selected_context = "light_char"
+        else:
+            selected_context = "light_bg"
+        self.file_root = os.path.join(PRJ_ROOT, self.ui.cb_prj.currentText(), "episodes", self.ui.epi_list.currentItem().text(), "shot", current_shot, "lighting", selected_context, "maya/work")
+        print(self.file_root)
         self.ui.file_list.clear()
         files = os.listdir(self.file_root)
         for ma_file in files:
@@ -94,6 +105,9 @@ class DesignerUI(QtWidgets.QDialog):
         scene_filepath = os.path.join(self.file_root, self.ui.file_list.currentItem().text())
         self.ui.open_btn.show()
         return scene_filepath
+    
+
+        
         
     def open_maya_scene(self):
         scene_file = self.get_file_path()
@@ -115,7 +129,7 @@ if __name__ == "__main__":
     except:
         pass
 
-    ui_path = r"E:/project/openfilemaya/open_file.ui"
+    ui_path = r"Z:/PIPELINE/maya/maya_utils/open_file.ui"
 
     designer_ui = DesignerUI(ui_path)
     designer_ui.show()
